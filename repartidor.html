@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="StylesDomisCo.css">
+  <title>Repartidor</title>
+
+</head>
+
+<body>
+  <div class="repartidor">
+    <div class="contenedor">
+      <!-- Imagen dentro del div -->
+      <img src="imagencita3-removebg-preview.png">
+    </div>
+    <div class="cuerpo">
+      <h1>¡Gracias por tu compra!</h1>
+      <h2>Nuestro repartidor te llevará tu pedido</h2>
+      <h3>Nombre del repartidor</h3>
+      <img src="ruta/imagen_repartidor.jpg" alt="Imagen del repartidor">
+      <div class="puntuacion">
+        <span>Puntuación:</span>
+        <span id="puntuacion"></span>
+      </div>
+      <a href="fin.html">Ver comentarios de los clientes</a>
+      <br>
+      <button onclick="volverAMenu()">Volver al menú</button>
+
+      <!-- Nuevo apartado - Comunicación con el Repartidor -->
+      <div id="comunicacionRepartidor">
+        <h2>Comunicación con el Repartidor</h2>
+        <p>Para una mejor comunicación con nuestro repartidor, contáctanos a través de WhatsApp:</p>
+        <a href="https://api.whatsapp.com/send/?phone=573202809304&text&type=phone_number&app_absent=0" target="_blank">
+          <button>Contactar por WhatsApp</button>
+        </a>
+      </div>
+
+      <!-- Nuevo apartado - Recetas de la Semana -->
+      <div id="recetasSemana">
+        <h2>Recetas de la Semana</h2>
+        <p>Mientras esperas tu pedido, revisa las recetas que tenemos para ti esta semana:</p>
+        <a href="enlace-a-recetas-de-la-semana.html" target="_blank">
+          <button>Ver Recetas de la Semana</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    var puntuaciones = JSON.parse(localStorage.getItem('puntuaciones')) || [];
+    var puntuacionTotal = puntuaciones.reduce((a, b) => a + b, 0);
+    var promedioPuntuacion = puntuaciones.length > 0 ? puntuacionTotal / puntuaciones.length : 0;
+
+    document.getElementById('puntuacion').textContent = promedioPuntuacion.toFixed(2);
+
+    function volverAMenu() {
+      window.location.href = "producos.html";
+    }
+  </script>
+</body>
+
+</html>

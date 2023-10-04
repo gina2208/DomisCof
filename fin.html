@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="StylesDomisCo.css">
+  <title>Comentarios de los clientes</title>
+
+</head>
+
+<body>
+  <div class="contenedor">
+    <!-- Imagen dentro del div -->
+    <img src="imagencita3-removebg-preview.png">
+  </div>
+  <div class="cuerpo">
+    <div class="comentarios">
+      <h2>Comentarios de los clientes</h2>
+      <form id="formularioPuntuacion">
+        <label for="puntuacion">Ingresa tu puntuación:</label>
+        <input type="number" id="puntuacion" min="0" max="10" step="0.1" required>
+        <button type="submit">Guardar puntuación</button>
+      </form>
+      <div id="listaComentarios"></div>
+    </div>
+  </div>
+  <script>
+    var puntuaciones = JSON.parse(localStorage.getItem('puntuaciones')) || [];
+    var listaComentarios = document.getElementById('listaComentarios');
+    var formularioPuntuacion = document.getElementById('formularioPuntuacion');
+    var inputPuntuacion = document.getElementById('puntuacion');
+
+    formularioPuntuacion.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var nuevaPuntuacion = parseFloat(inputPuntuacion.value);
+      puntuaciones.push(nuevaPuntuacion);
+      localStorage.setItem('puntuaciones', JSON.stringify(puntuaciones));
+      inputPuntuacion.value = '';
+      mostrarComentarios();
+    });
+
+    function mostrarComentarios() {
+      if (puntuaciones.length === 0) {
+        listaComentarios.textContent = 'No hay comentarios de los clientes.';
+      } else {
+        listaComentarios.innerHTML = '';
+        for (var i = 0; i < puntuaciones.length; i++) {
+          var comentario = document.createElement('p');
+          comentario.textContent = 'Puntuación: ' + puntuaciones[i];
+          listaComentarios.appendChild(comentario);
+        }
+      }
+    }
+
+    mostrarComentarios();
+  </script>
+</body>
+
+</html>

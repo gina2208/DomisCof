@@ -1,0 +1,135 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fcedbb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    flex-direction: column;
+    margin-bottom: 10vh;
+
+}
+
+h1 {
+    text-align: center;
+    margin: 30px 0;
+    color: #FF6347;
+    /* Rojo oscuro */
+}
+
+h2 {
+    color: #FFA500;
+    /* Naranja */
+    margin-bottom: 10px;
+}
+
+form {
+    margin-top: 10px;
+}
+
+div {
+    margin-bottom: 20px;
+    /* Ajustado para más espacio entre secciones */
+}
+
+input[type="text"],
+input[type="number"] {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+label {
+    color: #555555;
+}
+
+button {
+    background-color: #FF6347;
+    /* Rojo oscuro */
+    color: #FFFFFF;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #FF4500;
+    /* Rojo */
+}
+
+#main-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+    /* Ajustado para más espacio entre elementos de la lista */
+}
+
+#informacionTienda,
+#carritoCompras {
+    border: 1px solid #FFD700;
+    /* Amarillo */
+    padding: 15px;
+    /* Ajustado para más espacio interno */
+    margin-top: 20px;
+    /* Ajustado para más espacio entre secciones */
+}
+
+
+
+#informacionTienda button {
+    display: block;
+    /* Hacer que los botones aparezcan en una línea diferente */
+    margin-top: 10px;
+    /* Agregar un espacio superior para separar los botones */
+    clear: both !important;
+    /* Añadir !important para asegurar que esta regla prevalezca */
+}
+
+.contenedor {
+    width: 1500px;
+    /* Ajusta el ancho según tus necesidades */
+    height: 200px;
+    /* Ajusta la altura según tus necesidades */
+    overflow: hidden;
+    /* Para recortar la imagen si es más grande que el contenedor */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.contenedor img {
+    width: 100%;
+    /* La imagen ocupará el 100% del ancho del contenedor */
+    height: auto;
+    /* Se ajustará automáticamente a la proporción original */
+}
+
+.cuerpo {
+
+    width: 400px;
+    /* Ajusta el ancho según tus necesidades */
+    height: 300px;
+    /* Ajusta la altura según tus necesidades */
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="StylesDomisCo.css">
+    <title>Inicio de Sesión</title>
+
+</head>
+
+<body>
+    <h2>Bienvenidos a DomisCo <h2>
+            <h4>Por favor identificate, antes de entrar</h4>
+            <div class="contenedor">
+                <!-- Imagen dentro del div -->
+                <img src="imagencita3-removebg-preview.png">
+            </div>
+
+            <form onsubmit="login(event)">
+
+                <div>
+                    <input type="radio" id="admin" name="role" value="admin">
+                    <label for="admin">Administrador</label>
+                </div>
+                <div>
+                    <input type="radio" id="user" name="role" value="user" checked>
+                    <label for="user">Usuario</label>
+                </div>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+
+            <script>
+                function login(event) {
+                    event.preventDefault();
+                    var role = document.querySelector('input[name="role"]:checked').value;
+
+                    if (role === 'admin') {
+                        var username = prompt("Ingrese el nombre de usuario:");
+                        var password = prompt("Ingrese la contraseña:");
+
+                        if (username === 'admin' && password === 'admin123') {
+                            alert("Inicio de sesión exitoso como Administrador");
+                            sessionStorage.setItem("role", role);
+                            window.location.href = "producos.html";
+                        } else {
+                            alert("Credenciales inválidas, por favor inténtalo de nuevo");
+                            sessionStorage.removeItem("role");
+                        }
+                    } else if (role === 'user') {
+                        alert("Inicio de sesión exitoso como Usuario");
+                        sessionStorage.setItem("role", role);
+                        window.location.href = "producos.html";
+                    }
+                }
+
+                function getRoleFromSession() {
+                    return sessionStorage.getItem("role");
+                }
+
+                var role = getRoleFromSession();
+                if (role === "admin") {
+                    console.log("Hola, administrador");
+                } else {
+                    console.log("Hola, usuario");
+                }
+            </script>
+</body>
+
+</html>

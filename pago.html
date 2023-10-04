@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StylesDomisCo.css">
+    <title>Pago</title>
+</head>
+
+<body>
+    <div class="contenedor">
+        <!-- Imagen dentro del div -->
+        <img src="imagencita3-removebg-preview.png">
+    </div>
+    <div class="cuerpo">
+        <h1>¡Gracias por tu compra!</h1>
+        <h2>Detalles de la compra:</h2>
+        <p>Total: $<span id="total"></span></p>
+
+        <h2>Información de envío:</h2>
+        <form id="formulario">
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" required><br>
+
+            <label for="metodoPago">Método de pago:</label>
+            <select id="metodoPago" name="metodoPago" required>
+                <option value="">Selecciona un método de pago</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Plataformas financieras">Plataformas financieras</option>
+
+            </select><br>
+
+            <button type="submit">Confirmar pago</button>
+        </form>
+    </div>
+    <script>
+        // Obtener el valor total de la sesión
+        const total = sessionStorage.getItem("valorTotal");
+
+        // Mostrar el valor total en el elemento HTML con el id "total"
+        document.getElementById("total").textContent = total;
+
+        const formulario = document.getElementById("formulario");
+        formulario.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const direccion = document.getElementById("direccion").value;
+            const metodoPago = document.getElementById("metodoPago").value;
+
+            // Aquí puedes hacer lo que necesites con la dirección y el método de pago,
+            // como enviar la información a un servidor o procesar la compra.
+
+            // Redireccionar a la página repartidor.html con la dirección como parámetro en la URL
+            window.location.href = `repartidor.html?direccion=${direccion}`;
+        });
+    </script>
+
+</body>
+
+</html>

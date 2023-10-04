@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StylesDomisCo.css">
+    <title>Tiendas</title>
+
+</head>
+
+<body>
+    <div class="contenedor">
+        <!-- Imagen dentro del div -->
+        <img src="imagencita3-removebg-preview.png">
+    </div>
+    <div class="cuerpo">
+        <h1>Nuestros Productos</h1>
+        <div id="seccionAgregarTienda">
+
+            <h2>Agregar Tienda</h2>
+            <input type="text" id="nombreTiendaInput" placeholder="Nombre de la tienda">
+            <input type="text" id="direccionTiendaInput" placeholder="Dirección de la tienda">
+            <button onclick="agregarTienda()">Agregar</button>
+        </div>
+        <div id="seccionAgregarProducto">
+            <h2>Agregar Producto</h2>
+            <input type="text" id="nombreTiendaProductoInput" placeholder="Nombre de la tienda">
+            <input type="text" id="nombreProductoInput" placeholder="Nombre del producto">
+            <input type="text" id="especificacionProductoInput" placeholder="Especificaciones del producto">
+            <input type="number" id="valorProductoInput" placeholder="Valor del producto">
+            <input type="text" id="imagenProductoInput" placeholder="URL de la imagen del producto">
+            <button onclick="agregarProducto()">Agregar</button>
+        </div>
+        <h2>Tiendas</h2>
+        <ul id="tiendasList"></ul>
+
+        <h2>Información de la Tienda</h2>
+        <div id="informacionTienda"></div>
+
+        <h2>Carrito de Compras</h2>
+        <div id="carritoCompras"></div>
+    </div>
+    <script>
+
+        // Obtener tiendas almacenadas en Web Storage
+        var tiendas = JSON.parse(localStorage.getItem('tiendas')) || [];
+        var carritoCompras = [];
+
+        // Función para almacenar las tiendas en Web Storage
+        function guardarTiendas() {
+            localStorage.setItem('tiendas', JSON.stringify(tiendas));
+        }
+
+        // Función para almacenar el carrito de compras en Web Storage
+        function guardarCarritoCompras() {
+            localStorage.setItem('carritoCompras', JSON.stringify(carritoCompras));
+        }
+
+        // Función para agregar una tienda
+
+        function agregarTienda() {
+            var nombre = document.getElementById("nombreTiendaInput").value;
+            var direccion = document.getElementById("direccionTiendaInput").value;
+
+            if (nombre.trim() === "" || direccion.trim() === "") {
+                alert("Por favor ingresa el nombre y dirección de la tienda.");
+                return;
+            }
+
+            var nuevaTienda = { nombre: nombre, direccion: direccion };
+            tiendas.push(nuevaTienda);
+
+            document.getElementById("nombreTiendaInput").value = "";
+            document.getElementById("direccionTiendaInput").value = "";
+
+            actualizarTiendasList();
+            guardarTiendas();
+        }
+
+        // Función para agregar un producto
+        function agregarProducto() {
+            var nombreTienda = document.getElementById("nombreTiendaProductoInput").value;
+            var nombreProducto = document.getElementById("nombreProductoInput").value;
+            var especificacionProducto = document.getElementById("especificacionProductoInput").value;
+            var valorProducto = document.getElementById("valorProductoInput").value;
+            var imagenProducto = document.getElementById("imagenProductoInput").value;
+
+            if (nombreTienda.trim() === "" || nombreProducto.trim() === "" || especificacionProducto.trim() === "" || valorProducto.trim() === "" || imagenProducto.trim() === "") {
+                alert("Por favor ingresa todos los campos para agregar un producto.");
+                return;
+            }
+
+            var tiendaEncontrada = tiendas.find(function (tienda) {
+                return tienda.nombre === nombreTienda;
+            });
+
+            if (!tiendaEncontrada) {
+                alert("La tienda ingresada no existe.");
+                return;
+            }
+
+            if (!tiendaEncontrada.productos) {
+                tiendaEncontrada.productos = [];
+            }
+
+            tiendaEncontrada.productos.push({
+                nombre: nombreProducto,
+                especificacion: especificacionProducto,
+                valor: valorProducto,
+                imagen: imagenProducto
+            });
+
+            document.getElementById("nombreTiendaProductoInput").value = "";
+            document.getElementById("nombreProductoInput").value = "";
+            document.getElementById("especificacionProductoInput").value = "";
+            document.getElementById("valorProductoInput").value = "";
+            document.getElementById("imagenProductoInput").value = "";
+
+            mostrarInformacionTienda(tiendaEncontrada);
+            guardarTiendas();
+        }
+
+        // Función para eliminar una tienda (solo para administradores)
+        function eliminarTienda(nombreTienda) {
+            var role = getRoleFromSession();
+
+            if (role === "admin") {
+                var tiendaIndex = tiendas.findIndex(function (tienda) {
+                    return tienda.nombre === nombreTienda;
+                });
+
+                if (tiendaIndex !== -1) {
+                    tiendas.splice(tiendaIndex, 1);
+                    actualizarTiendasList();
+                    guardarTiendas();
+                }
+            }
+        }
+        function eliminarProducto(nombreTienda, nombreProducto) {
+            var role = getRoleFromSession();
+
+            if (role === "admin") {
+                var tiendaEncontrada = tiendas.find(function (tienda) {
+                    return tienda.nombre === nombreTienda;
+                });
+
+                if (tiendaEncontrada && tiendaEncontrada.productos) {
+                    var productoIndex = tiendaEncontrada.productos.findIndex(function (producto) {
+                        return producto.nombre === nombreProducto;
+                    });
+
+                    if (productoIndex !== -1) {
+                        // Eliminar el producto de la tienda
+                        tiendaEncontrada.productos.splice(productoIndex, 1);
+
+                        // Guardar los cambios en el almacenamiento local
+                        guardarTiendas();
+
+                        // Mostrar la información actualizada de la tienda
+                        mostrarInformacionTienda(tiendaEncontrada);
+
+                        // Actualizar la lista de tiendas en la interfaz
+                        actualizarTiendasList();
+                    }
+                }
+            }
+        }
+
+
+
+        function actualizarTiendasList() {
+            var tiendasList = document.getElementById("tiendasList");
+
+            tiendasList.innerHTML = "";
+
+            tiendas.forEach(function (tienda) {
+                var li = document.createElement("li");
+                li.textContent = tienda.nombre + " - " + tienda.direccion;
+                li.addEventListener("click", function () {
+                    mostrarInformacionTienda(tienda);
+                });
+
+                var role = getRoleFromSession();
+
+                if (role === "admin") {
+                    // Si el usuario es administrador, agregar botón para eliminar la tienda
+                    var eliminarTiendaButton = document.createElement("button");
+                    eliminarTiendaButton.textContent = "Eliminar Tienda";
+                    eliminarTiendaButton.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        eliminarTienda(tienda.nombre);
+                    });
+                    li.appendChild(eliminarTiendaButton);
+
+                    // Agregar botón para eliminar productos solo si hay productos
+                    if (tienda.productos && tienda.productos.length > 0) {
+                        var eliminarProductosButton = document.createElement("button");
+                        eliminarProductosButton.textContent = "Eliminar Productos";
+                        eliminarProductosButton.addEventListener("click", function (event) {
+                            event.stopPropagation();
+                            // Puedes llamar a una función que maneje la eliminación de productos aquí
+                            // En este caso, llamamos a la función que muestra la interfaz para eliminar productos
+                            mostrarInterfazEliminarProductos(tienda.nombre);
+                        });
+                        li.appendChild(eliminarProductosButton);
+                    }
+                }
+
+                tiendasList.appendChild(li);
+            });
+        }
+
+        // Función para mostrar la información de una tienda
+
+        function mostrarInformacionTienda(tienda) {
+            var informacionTienda = document.getElementById("informacionTienda");
+
+            informacionTienda.innerHTML = "";
+
+            var nombreTienda = document.createElement("h3");
+            nombreTienda.textContent = tienda.nombre;
+            informacionTienda.appendChild(nombreTienda);
+
+            var direccionTienda = document.createElement("p");
+            direccionTienda.textContent = "Dirección: " + tienda.direccion;
+            informacionTienda.appendChild(direccionTienda);
+
+            if (tienda.productos && tienda.productos.length > 0) {
+                var productosTitulo = document.createElement("h4");
+                productosTitulo.textContent = "Productos:";
+                informacionTienda.appendChild(productosTitulo);
+
+                var productosList = document.createElement("ul");
+
+                tienda.productos.forEach(function (producto) {
+                    var productoItem = document.createElement("li");
+
+                    var nombreProducto = document.createElement("p");
+                    nombreProducto.textContent = "Nombre: " + producto.nombre;
+                    productoItem.appendChild(nombreProducto);
+
+                    var especificacionProducto = document.createElement("p");
+                    especificacionProducto.textContent = "Especificaciones: " + producto.especificacion;
+                    productoItem.appendChild(especificacionProducto);
+
+                    var valorProducto = document.createElement("p");
+                    valorProducto.textContent = "Valor: $" + producto.valor;
+                    productoItem.appendChild(valorProducto);
+
+                    var imagenProducto = document.createElement("img");
+                    imagenProducto.src = producto.imagen;
+                    imagenProducto.alt = producto.nombre;
+                    imagenProducto.style.maxWidth = "200px";
+                    productoItem.appendChild(imagenProducto);
+
+                    // Agregar botón para agregar el producto al carrito
+                    var agregarCarritoButton = document.createElement("button");
+                    agregarCarritoButton.textContent = "Agregar al carrito";
+                    agregarCarritoButton.addEventListener("click", function () {
+                        agregarAlCarrito(producto);
+                    });
+
+                    productoItem.appendChild(agregarCarritoButton);
+
+                    var role = getRoleFromSession();
+
+                    if (role === "admin") {
+                        // Agregar botón para eliminar el producto (solo para administradores)
+                        var eliminarProductoButton = document.createElement("button");
+                        eliminarProductoButton.textContent = "Eliminar Producto";
+                        eliminarProductoButton.addEventListener("click", function () {
+                            eliminarProducto(tienda.nombre, producto.nombre);
+                        });
+
+                        productoItem.appendChild(eliminarProductoButton);
+                    }
+
+                    productosList.appendChild(productoItem);
+                });
+
+                informacionTienda.appendChild(productosList);
+            }
+        }
+
+        // Función para agregar un producto al carrito de compras
+        function agregarAlCarrito(producto) {
+            carritoCompras.push(producto);
+            actualizarCarritoCompras();
+            guardarCarritoCompras();
+        }
+        // Función para eliminar un producto al carrito de compras
+        function eliminarDelCarrito(producto) {
+            var index = carritoCompras.findIndex(function (p) {
+                return p.nombre === producto.nombre;
+            });
+
+            if (index !== -1) {
+                carritoCompras.splice(index, 1);
+                actualizarCarritoCompras();
+                guardarCarritoCompras();
+            }
+        }
+
+        // Función para actualizar el carrito de compras
+        function actualizarCarritoCompras() {
+            var carritoComprasDiv = document.getElementById("carritoCompras");
+
+            carritoComprasDiv.innerHTML = "";
+
+            var carritoComprasTitulo = document.createElement("h4");
+            carritoComprasTitulo.textContent = "Carrito de Compras:";
+            carritoComprasDiv.appendChild(carritoComprasTitulo);
+
+            var carritoComprasList = document.createElement("ul");
+
+            var totalValorProductos = 0; // Variable para almacenar el valor total acumulado de los productos
+
+            carritoCompras.forEach(function (producto) {
+                var productoItem = document.createElement("li");
+
+                var nombreProducto = document.createElement("p");
+                nombreProducto.textContent = "Nombre: " + producto.nombre;
+                productoItem.appendChild(nombreProducto);
+
+                var especificacionProducto = document.createElement("p");
+                especificacionProducto.textContent = "Especificaciones: " + producto.especificacion;
+                productoItem.appendChild(especificacionProducto);
+
+                var valorProducto = document.createElement("p");
+                valorProducto.textContent = "Valor: $" + producto.valor;
+                productoItem.appendChild(valorProducto);
+
+                var imagenProducto = document.createElement("img");
+                imagenProducto.src = producto.imagen;
+                imagenProducto.alt = producto.nombre;
+                imagenProducto.style.maxWidth = "200px";
+                productoItem.appendChild(imagenProducto);
+
+                var eliminarCarritoButton = document.createElement("button");
+                eliminarCarritoButton.textContent = "Eliminar del carrito";
+                eliminarCarritoButton.addEventListener("click", function () {
+                    eliminarDelCarrito(producto);
+                });
+                productoItem.appendChild(eliminarCarritoButton);
+
+                carritoComprasList.appendChild(productoItem);
+
+                totalValorProductos += parseFloat(producto.valor); // Sumar el valor del producto al total acumulado
+            });
+
+            carritoComprasDiv.appendChild(carritoComprasList);
+
+            var valorTotal = document.createElement("p");
+            valorTotal.textContent = "Valor total: $" + totalValorProductos.toFixed(2);
+            carritoComprasDiv.appendChild(valorTotal);
+
+            // Almacenar el valor total acumulado en una sesión
+            sessionStorage.setItem("valorTotal", totalValorProductos.toFixed(2));
+
+            var pagoButton = document.createElement("button");
+            pagoButton.textContent = "Ir a Pago";
+            pagoButton.addEventListener("click", function () {
+                window.location.href = "pago.html"; // Redireccionar a pago.html al hacer clic
+            });
+            carritoComprasDiv.appendChild(pagoButton);
+        }
+
+        // Actualizar lista de tiendas al cargar la página
+        actualizarTiendasList();
+
+        // Obtener carrito de compras almacenado en Web Storage
+        carritoCompras = JSON.parse(localStorage.getItem('carritoCompras')) || [];
+
+        // Actualizar carrito de compras al cargar la página
+        actualizarCarritoCompras();
+
+        function getRoleFromSession() {
+            return sessionStorage.getItem("role");
+        }
+
+        var role = getRoleFromSession();
+        if (role === "admin") {
+            console.log("Hola, administrador");
+        } else {
+            console.log("Hola, usuario");
+            // Ocultar secciones de administrador si es usuario
+            ocultarSeccionesAdmin();
+        }
+
+        function ocultarSeccionesAdmin() {
+            // Ocultar secciones de agregar tiendas y productos
+            document.getElementById("seccionAgregarTienda").style.display = "none";
+            document.getElementById("seccionAgregarProducto").style.display = "none";
+        }
+    </script>
+</body>
+
+</html>
