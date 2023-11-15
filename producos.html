@@ -199,8 +199,7 @@
                         eliminarProductosButton.textContent = "Eliminar Productos";
                         eliminarProductosButton.addEventListener("click", function (event) {
                             event.stopPropagation();
-                            // Puedes llamar a una función que maneje la eliminación de productos aquí
-                            // En este caso, llamamos a la función que muestra la interfaz para eliminar productos
+                            
                             mostrarInterfazEliminarProductos(tienda.nombre);
                         });
                         li.appendChild(eliminarProductosButton);
